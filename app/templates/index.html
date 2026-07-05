@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Tecnología</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container navbar-content">
+            <h1 class="logo">⚡ Tienda<span>Tech</span></h1>
+            <nav>
+                <a href="#productos">Productos</a>
+                <a href="#contacto">Contacto</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h2>Tecnología al mejor precio</h2>
+            <p>Encuentra los mejores productos tecnológicos con la mejor calidad y garantía.</p>
+        </div>
+    </section>
+
+    <main class="container" id="productos">
+        <h2 class="section-title">Nuestros Productos</h2>
+
+        <form class="barra-busqueda" method="GET" action="/">
+            <input 
+                type="text" 
+                name="busqueda" 
+                placeholder="Buscar productos..." 
+                value="{{ busqueda }}"
+            >
+            <button type="submit">🔍 Buscar</button>
+        </form>
+
+        {% if busqueda %}
+            <p class="resultado-busqueda">
+                Resultados para: "<strong>{{ busqueda }}</strong>"
+                <a href="/" class="limpiar-busqueda">✕ Limpiar</a>
+            </p>
+        {% endif %}
+
+        <div class="acciones-top">
+            <a href="{{ url_for('main.agregar_producto') }}" class="btn-agregar">+ Agregar Producto</a>
+        </div>
+
+        <div class="grid-productos">
+            {% for producto in productos %}
+            <div class="card-producto">
+                <div class="card-imagen">
+                    {% if producto.imagen %}
+                        <img src="{{ url_for('static', filename='img/' + producto.imagen) }}" alt="{{ producto.nombre }}">
+                    {% else %}
+                        <span class="icono">🖥️</span>
+                    {% endif %}
+                </div>
+                <div class="card-info">
+                    <h3>{{ producto.nombre }}</h3>
+                    <p class="precio">${{ "%.2f"|format(producto.precio) }}</p>
+                    <p class="stock 
+                        {% if producto.stock > 10 %}stock-alto
+                        {% elif producto.stock > 0 %}stock-bajo
+                        {% else %}stock-agotado{% endif %}">
+                        {% if producto.stock > 0 %}
+                            {{ producto.stock }} unidades disponibles
+                        {% else %}
+                            Agotado
+                        {% endif %}
+                    </p>
+                    <button class="btn-comprar" {% if producto.stock == 0 %}disabled{% endif %}>
+                        {% if producto.stock > 0 %}Agregar al carrito{% else %}No disponible{% endif %}
+                    </button>
+
+                    <div class="acciones-admin">
+                        <a href="{{ url_for('main.editar_producto', id=producto.id) }}" class="btn-editar">✏️ Editar</a>
+                        <form method="POST" action="{{ url_for('main.eliminar_producto', id=producto.id) }}" onsubmit="return confirm('¿Seguro que quieres eliminar este producto?');">
+                            <button type="submit" class="btn-eliminar">🗑️ Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="sin-productos">No hay productos disponibles por el momento.</p>
+            {% endfor %}
+        </div>
+    </main>
+
+    <footer id="contacto">
+        <div class="container footer-content">
+
+            <div class="footer-col">
+                <h3>⚡ Tienda<span>Tech</span></h3>
+                <p>Tu tienda de confianza en tecnología. Calidad, garantía y los mejores precios.</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Contacto</h4>
+                <p>📞 +593 99 123 4567</p>
+                <p>✉️ contacto@tiendatech.com</p>
+                <p>📍 Quito, Ecuador</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Síguenos</h4>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook">📘</a>
+                    <a href="#" aria-label="Instagram">📸</a>
+                    <a href="#" aria-label="WhatsApp">💬</a>
+                    <a href="#" aria-label="TikTok">🎵</a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 TiendaTech. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
