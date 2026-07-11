@@ -1,17 +1,21 @@
 import unittest
 from app import create_app, db
+from app.config import TestConfig
 from app.models import Producto
 
 class TestInsertar(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.app = create_app()
+        cls.app = create_app(TestConfig)
         cls.ctx = cls.app.app_context()
         cls.ctx.push()
+        db.create_all()
 
     @classmethod
     def tearDownClass(cls):
+        db.session.remove()
+        db.drop_all()
         cls.ctx.pop()
 
     def test_insertar_producto(self):
